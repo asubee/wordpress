@@ -1,31 +1,33 @@
 version: '2'
 
 services:
+  wordpress-mariadb:
+    image: mariadb
+    volumes:
+      - wordpress-db:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: wordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
   # wordpress
   wordpress:
     image: wordpress:latest
     ports:
       - "9000:80"
     links:
-      - wordpress-postgres
+      - wordpress-mariadb
     restart: always
     environment:
-      WORDPRESS_DB_HOST: postgres:5432
+      WORDPRESS_DB_HOST: wordpress-mariadb
       WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: postgres
+      WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
     volumes:
       - wordpress-files:/var/www/html
 
-  wordpress-postgres:
-    image: postgres
-    volumes:
-      - wordpress-db:/var/lib/postgresql/data
-    restart: always
-    environment:
-      POSTGRES_DB: wordpress
-      POSTGRES_PASSWORD: wordpress
-      POSTGRES_USER: wordpress
 volumes:
   wordpress-files:
     external: true
